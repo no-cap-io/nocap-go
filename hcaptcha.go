@@ -49,13 +49,24 @@ func (hCaptcha *HCaptcha) SolveHCaptcha() (string, error) {
 // returns createTaskResp.Id. An error is
 // returned if the request wasn't successful.
 func (hCaptcha *HCaptcha) createTask() (string, error) {
-	values := map[string]interface{}{"mode": hCaptcha.Mode, "proxy": hCaptcha.Proxy, "host": hCaptcha.Host, "sitekey": hCaptcha.SiteKey}
-	data, _ := json.Marshal(values)
+	values := map[string]interface{}{
+		"mode": hCaptcha.Mode,
+		"proxy": hCaptcha.Proxy,
+		"host": hCaptcha.Host,
+		"sitekey": hCaptcha.SiteKey,
+	}
+	data, err := json.Marshal(values)
+	if err != nil {
+		return "", err
+	}
 
-	req, _ := http.NewRequest("POST", fmt.Sprintf(CapEndpoint+ "/hcaptcha/create?api_key=%s", hCaptcha.ApiKey), bytes.NewBuffer(data))
+	req, err := http.NewRequest("POST", fmt.Sprintf(CapEndpoint+ "/hcaptcha/create?api_key=%s", hCaptcha.ApiKey), bytes.NewBuffer(data))
+	if err != nil {
+		return "", err
+	}
 	req.Header.Add("content-type", "application/json")
-	resp, err := request(req)
 
+	resp, err := request(req)
 	if err != nil {
 		return "", err
 	}
@@ -78,14 +89,21 @@ func (hCaptcha *HCaptcha) createTask() (string, error) {
 // or if a captcha was not solved.
 func (hCaptcha *HCaptcha) getSolution(task string) (string, error) {
 	var status statusResp
-	req, _ := http.NewRequest("GET", fmt.Sprintf(CapEndpoint+ "/hcaptcha/status?api_key=%s&task_id=%s", hCaptcha.ApiKey, task), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf(CapEndpoint+ "/hcaptcha/status?api_key=%s&task_id=%s", hCaptcha.ApiKey, task), nil)
+	if err != nil {
+		return "", err
+	}
 	// wait for server to respond with a token or error
 	for status.Status == "solving" || status.Status == "" {
 		resp, err := request(req)
 		if err != nil {
 			return "", err
 		}
-		_ = json.Unmarshal([]byte(resp), &status)
+
+		err = json.Unmarshal([]byte(resp), &status)
+		if err != nil {
+			return "", err
+		}
 	}
 	// ensure status is successful
 	if status.Status != "success" {
