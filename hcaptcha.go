@@ -15,11 +15,14 @@ const (
 )
 
 type HCaptcha struct {
-	ApiKey string
-	Mode int
-	SiteKey string
-	Proxy string
-	Host string
+	ApiKey  string
+	Mode    int    `json:"mode,omitempty"`
+	SiteKey string `json:"sitekey,omitempty"`
+	Proxy   string `json:"proxy,omitempty"`
+	Host    string `json:"host,omitempty"`
+	Version string `json:"version,omitempty"`
+	Href    string `json:"href,omitempty"`
+	RqData  string `json:"rqdata,omitempty"`
 }
 
 type createTaskResp struct {
@@ -49,13 +52,7 @@ func (hCaptcha *HCaptcha) SolveHCaptcha() (string, error) {
 // returns createTaskResp.Id. An error is
 // returned if the request wasn't successful.
 func (hCaptcha *HCaptcha) createTask() (string, error) {
-	values := map[string]interface{}{
-		"mode": hCaptcha.Mode,
-		"proxy": hCaptcha.Proxy,
-		"host": hCaptcha.Host,
-		"sitekey": hCaptcha.SiteKey,
-	}
-	data, err := json.Marshal(values)
+	data, err := json.Marshal(hCaptcha)
 	if err != nil {
 		return "", err
 	}
