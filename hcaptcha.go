@@ -51,7 +51,7 @@ func (hCaptcha *HCaptcha) SolveHCaptcha() (string, error) {
 // createTask creates a new HCaptcha task and
 // returns createTaskResp.Id. An error is
 // returned if the request wasn't successful.
-func (hCaptcha *HCaptcha) createTask() (string, error) {
+func (hCaptcha *HCaptcha) CreateTask() (string, error) {
 	data, err := json.Marshal(hCaptcha)
 	if err != nil {
 		return "", err
@@ -84,7 +84,7 @@ func (hCaptcha *HCaptcha) createTask() (string, error) {
 // getSolution attempts to retrieve a token given a task.
 // An error is returned if the request was unable to be fulfilled,
 // or if a captcha was not solved.
-func (hCaptcha *HCaptcha) getSolution(task string) (string, error) {
+func (hCaptcha *HCaptcha) GetSolution(task string) (string, error) {
 	var status statusResp
 	req, err := http.NewRequest("GET", fmt.Sprintf(CapEndpoint+ "/hcaptcha/status?api_key=%s&task_id=%s", hCaptcha.ApiKey, task), nil)
 	if err != nil {
