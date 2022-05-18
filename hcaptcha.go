@@ -37,11 +37,11 @@ type statusResp struct {
 }
 
 func (hCaptcha *HCaptcha) SolveHCaptcha() (string, error) {
-	task, err := hCaptcha.createTask()
+	task, err := hCaptcha.CreateTask()
 	if err != nil {
 		return "", err
 	}
-	solution, err := hCaptcha.getSolution(task)
+	solution, err := hCaptcha.GetSolution(task)
 	if err != nil {
 		return "", err
 	}
